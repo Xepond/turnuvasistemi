@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Badge, GameTag, Modal, FormGroup, inputStyle } from "./tournament_system.ui.jsx";
+import { Badge, GameTag, Modal, FormGroup, inputStyle, textareaStyle, surfaceStyle } from "./tournament_system.ui.jsx";
 import {
   GAMES,
   ROLES,
@@ -123,29 +123,66 @@ export default function App() {
     { key: "admin", label: "Admin", icon: "ti-settings" },
   ];
 
+  const shellVars = {
+    "--color-background-primary": "rgba(15, 22, 39, 0.92)",
+    "--color-background-secondary": "rgba(255, 255, 255, 0.05)",
+    "--color-background-tertiary": "#081120",
+    "--color-background-success": "rgba(34, 197, 94, 0.14)",
+    "--color-background-danger": "rgba(239, 68, 68, 0.16)",
+    "--color-background-warning": "rgba(245, 158, 11, 0.16)",
+    "--color-background-info": "rgba(59, 130, 246, 0.14)",
+    "--color-border-secondary": "rgba(148, 163, 184, 0.24)",
+    "--color-border-tertiary": "rgba(148, 163, 184, 0.16)",
+    "--color-border-danger": "rgba(239, 68, 68, 0.40)",
+    "--color-border-success": "rgba(34, 197, 94, 0.36)",
+    "--color-text-primary": "#F4F7FB",
+    "--color-text-secondary": "#C3CFDE",
+    "--color-text-tertiary": "#8493A8",
+    "--color-text-danger": "#FFB3B3",
+    "--color-text-success": "#9EE6BA",
+    "--color-text-warning": "#FFD08A",
+    "--color-text-info": "#B8D4FF",
+  };
+
+  const pageCardStyle = { ...surfaceStyle, padding: "1rem 1.1rem" };
+  const navButtonBase = { background: "transparent", border: "1px solid transparent", cursor: "pointer", padding: "10px 16px", fontSize: 14, fontWeight: 600, color: "var(--color-text-secondary)", borderRadius: 999, display: "flex", alignItems: "center", gap: 6, transition: "all 0.15s ease" };
+
   return (
-    <div style={{ fontFamily: "var(--font-sans)", color: "var(--color-text-primary)", minHeight: "100vh", background: "var(--color-background-tertiary)" }}>
+    <div style={{ ...shellVars, fontFamily: "Inter, 'Segoe UI', system-ui, sans-serif", color: "var(--color-text-primary)", minHeight: "100vh", background: "radial-gradient(circle at top left, rgba(232,93,74,0.18), transparent 28%), radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 24%), linear-gradient(180deg, #081120 0%, #0B1324 40%, #081120 100%)", position: "relative", overflowX: "hidden" }}>
+      <div aria-hidden="true" style={{ position: "fixed", inset: 0, pointerEvents: "none", background: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04), transparent 22%), radial-gradient(circle at 80% 10%, rgba(255,255,255,0.03), transparent 18%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 20%)" }}></div>
       <h2 className="sr-only">Internet Café Tournament Registration System</h2>
 
       {/* Header */}
-      <div style={{ background: "var(--color-background-primary)", borderBottom: "0.5px solid var(--color-border-tertiary)", padding: "0 1.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "1rem 0 0" }}>
-          <i className="ti ti-device-gamepad-2" style={{ fontSize: 22, color: "#E85D4A" }} aria-hidden="true"></i>
-          <span style={{ fontWeight: 500, fontSize: 17 }}>CyberArena</span>
-          <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", marginLeft: 4 }}>Internet Café Tournament System</span>
-        </div>
-        <div style={{ display: "flex", gap: 0, marginTop: 12 }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 40, backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", background: "rgba(8, 17, 32, 0.78)", borderBottom: "1px solid rgba(148,163,184,0.14)" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "1rem 1.5rem 0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 14, display: "grid", placeItems: "center", background: "linear-gradient(135deg, #E85D4A, #F59E0B)", boxShadow: "0 12px 30px rgba(232,93,74,0.28)" }}>
+                <i className="ti ti-device-gamepad-2" style={{ fontSize: 20, color: "#fff" }} aria-hidden="true"></i>
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>CyberArena</div>
+                <div style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>Internet Café Tournament System</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 12, color: "var(--color-text-tertiary)", padding: "8px 12px", borderRadius: 999, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(148,163,184,0.12)" }}>
+              Turnuva kayıtları ve takım eşleşmeleri için canlı panel
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => navigatePage(t.key)} style={{
-              background: "none", border: "none", cursor: "pointer", padding: "8px 16px 10px", fontSize: 14, fontWeight: 500,
-              color: page === t.key ? "#E85D4A" : "var(--color-text-secondary)",
-              borderBottom: page === t.key ? "2px solid #E85D4A" : "2px solid transparent",
-              display: "flex", alignItems: "center", gap: 6, transition: "color 0.15s"
+              ...navButtonBase,
+              background: page === t.key ? "linear-gradient(135deg, rgba(232,93,74,0.18), rgba(245,158,11,0.16))" : "rgba(255,255,255,0.02)",
+              color: page === t.key ? "#fff" : "var(--color-text-secondary)",
+              borderColor: page === t.key ? "rgba(232,93,74,0.36)" : "rgba(148,163,184,0.12)",
+              boxShadow: page === t.key ? "0 10px 30px rgba(232,93,74,0.16)" : "none"
             }}>
               <i className={`ti ${t.icon}`} style={{ fontSize: 15 }} aria-hidden="true"></i>
               {t.label}
             </button>
           ))}
+          </div>
         </div>
       </div>
 
@@ -163,7 +200,7 @@ export default function App() {
         </div>
       )}
 
-      <div style={{ padding: "1.5rem" }}>
+      <main style={{ maxWidth: 1240, margin: "0 auto", padding: "1.5rem", position: "relative", zIndex: 1 }}>
         {page === "home" && (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginBottom: "1rem" }}>
@@ -456,7 +493,7 @@ export default function App() {
             </div>
           </>
         )}
-      </div>
+      </main>
 
       {/* ── REGISTER MODAL ── */}
       <Modal open={!!registerModal} onClose={() => setRegisterModal(null)} title={`Register for ${registerModal?.name}`}>
@@ -608,7 +645,7 @@ export default function App() {
           </FormGroup>
         </div>
         <FormGroup label="About you *">
-          <textarea style={{ ...inputStyle, minHeight: 72, resize: "vertical" }} value={lftForm.desc} onChange={e => setLftForm(f => ({ ...f, desc: e.target.value }))} placeholder="Tell others about your playstyle, hours, goals..." />
+          <textarea style={textareaStyle} value={lftForm.desc} onChange={e => setLftForm(f => ({ ...f, desc: e.target.value }))} placeholder="Tell others about your playstyle, hours, goals..." />
         </FormGroup>
         <FormGroup label="Contact info *">
           <input style={inputStyle} value={lftForm.contact} onChange={e => setLftForm(f => ({ ...f, contact: e.target.value }))} placeholder="Discord: username#0000" />
