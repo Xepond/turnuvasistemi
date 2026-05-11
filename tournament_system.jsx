@@ -23,6 +23,7 @@ const pageTitles = {
 };
 
 const normalizePage = value => (value && pageTitles[value] ? value : "home");
+const logoUrl = new URL("./doranet_logo.png", import.meta.url).href;
 
 export default function App() {
   const [page, setPage] = useState(() => normalizePage(window.location.hash.replace(/^#/, "")));
@@ -150,19 +151,19 @@ export default function App() {
   return (
     <div style={{ ...shellVars, fontFamily: "Inter, 'Segoe UI', system-ui, sans-serif", color: "var(--color-text-primary)", minHeight: "100vh", background: "radial-gradient(circle at top left, rgba(232,93,74,0.18), transparent 28%), radial-gradient(circle at top right, rgba(59,130,246,0.16), transparent 24%), linear-gradient(180deg, #081120 0%, #0B1324 40%, #081120 100%)", position: "relative", overflowX: "hidden" }}>
       <div aria-hidden="true" style={{ position: "fixed", inset: 0, pointerEvents: "none", background: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04), transparent 22%), radial-gradient(circle at 80% 10%, rgba(255,255,255,0.03), transparent 18%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 20%)" }}></div>
-      <h2 className="sr-only">Internet Café Tournament Registration System</h2>
+      <h2 className="sr-only">Dora Net Turnuva Kayıt Sistemi</h2>
 
       {/* Header */}
       <div style={{ position: "sticky", top: 0, zIndex: 40, backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)", background: "rgba(8, 17, 32, 0.78)", borderBottom: "1px solid rgba(148,163,184,0.14)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "1rem 1.5rem 0.75rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 14, display: "grid", placeItems: "center", background: "linear-gradient(135deg, #E85D4A, #F59E0B)", boxShadow: "0 12px 30px rgba(232,93,74,0.28)" }}>
-                <i className="ti ti-device-gamepad-2" style={{ fontSize: 20, color: "#fff" }} aria-hidden="true"></i>
+              <div style={{ width: 40, height: 40, borderRadius: 14, overflow: "hidden", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(148,163,184,0.18)", boxShadow: "0 12px 30px rgba(232,93,74,0.18)" }}>
+                <img src={logoUrl} alt="Dora Net logo" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>CyberArena</div>
-                <div style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>Internet Café Tournament System</div>
+                <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-0.02em" }}>Dora Net Turnuva Kayıt Sistemi</div>
+                <div style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>Internet cafe turnuva kayıt ve takım sistemi</div>
               </div>
             </div>
             <div style={{ fontSize: 12, color: "var(--color-text-tertiary)", padding: "8px 12px", borderRadius: 999, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(148,163,184,0.12)" }}>
