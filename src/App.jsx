@@ -1,0 +1,1 @@
+export { default } from "../tournament_system.jsx";
