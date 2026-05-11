@@ -24,6 +24,7 @@ const pageTitles = {
 
 const normalizePage = value => (value && pageTitles[value] ? value : "home");
 const logoUrl = new URL("./doranet_logo.png", import.meta.url).href;
+const ADMIN_ACCESS_CODE = "doranet-2026";
 
 export default function App() {
   const [page, setPage] = useState(() => normalizePage(window.location.hash.replace(/^#/, "")));
@@ -34,12 +35,15 @@ export default function App() {
   const [lftSearch, setLftSearch] = useState("");
   const [lftRoleFilter, setLftRoleFilter] = useState("All roles");
   const [lftRankFilter, setLftRankFilter] = useState("All ranks");
+  const [adminUnlocked, setAdminUnlocked] = useState(() => window.localStorage.getItem("doranet_admin_unlocked") === "true");
+  const [adminCode, setAdminCode] = useState("");
 
   // Modals
   const [registerModal, setRegisterModal] = useState(null);
   const [createModal, setCreateModal] = useState(false);
   const [lftModal, setLftModal] = useState(false);
   const [detailModal, setDetailModal] = useState(null);
+  const [adminLoginModal, setAdminLoginModal] = useState(false);
 
   // Forms
   const [regForm, setRegForm] = useState({ teamName: "", captain: "", gameId: "", players: "", rank: "Gold" });
@@ -53,6 +57,13 @@ export default function App() {
     window.addEventListener("hashchange", syncPage);
     return () => window.removeEventListener("hashchange", syncPage);
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("doranet_admin_unlocked", adminUnlocked ? "true" : "false");
+    if (!adminUnlocked && page === "admin") {
+      navigatePage("home");
+    }
+  }, [adminUnlocked, page]);
 
   const navigatePage = nextPage => {
     const normalized = normalizePage(nextPage);
@@ -91,6 +102,27 @@ export default function App() {
     notify("Your LFT post is live!");
   };
 
+  const handleAdminUnlock = () => {
+    if (adminCode.trim() !== ADMIN_ACCESS_CODE) {
+      notify("Admin code is invalid.", "error");
+      return;
+    }
+    setAdminUnlocked(true);
+    setAdminCode("");
+    setAdminLoginModal(false);
+    navigatePage("admin");
+    notify("Admin access granted.");
+  };
+
+  const handleAdminLogout = () => {
+    setAdminUnlocked(false);
+    setAdminCode("");
+    setCreateModal(false);
+    setPage("home");
+    window.location.hash = "home";
+    notify("Admin session closed.");
+  };
+
   const filtered = filterGame === "All" ? tournaments : tournaments.filter(t => t.game === filterGame);
   const filteredLFT = lftPosts.filter(p => {
     const matchesGame = lftFilter === "All" || p.game === lftFilter;
@@ -121,7 +153,7 @@ export default function App() {
     { key: "home", label: "Home", icon: "ti-home" },
     { key: "tournaments", label: "Tournaments", icon: "ti-trophy" },
     { key: "findteam", label: "Find Teammates", icon: "ti-users" },
-    { key: "admin", label: "Admin", icon: "ti-settings" },
+    ...(adminUnlocked ? [{ key: "admin", label: "Admin", icon: "ti-settings" }] : []),
   ];
 
   const shellVars = {
@@ -183,6 +215,17 @@ export default function App() {
               {t.label}
             </button>
           ))}
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>
+              Admin panel yalnızca yetkili kullanıcılar tarafından açılabilir.
+            </div>
+            <button
+              onClick={() => (adminUnlocked ? handleAdminLogout() : setAdminLoginModal(true))}
+              style={{ padding: "8px 14px", borderRadius: 14, fontSize: 12, fontWeight: 700, cursor: "pointer", background: adminUnlocked ? "rgba(34,197,94,0.14)" : "rgba(255,255,255,0.04)", color: adminUnlocked ? "var(--color-text-success)" : "var(--color-text-primary)", border: "1px solid rgba(148,163,184,0.18)" }}
+            >
+              {adminUnlocked ? "Admin çıkışı" : "Admin girişi"}
+            </button>
           </div>
         </div>
       </div>
@@ -453,7 +496,7 @@ export default function App() {
         )}
 
         {/* ── ADMIN TAB ── */}
-        {page === "admin" && (
+        {page === "admin" && adminUnlocked && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h3 style={{ margin: 0, fontWeight: 500 }}>Tournament Management</h3>
@@ -494,6 +537,20 @@ export default function App() {
             </div>
           </>
         )}
+
+        {page === "admin" && !adminUnlocked && (
+          <div style={{ ...surfaceStyle, padding: "1.5rem" }}>
+            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Admin panel kilitli</div>
+            <p style={{ margin: 0, color: "var(--color-text-secondary)", lineHeight: 1.7 }}>
+              Bu alan sadece yetkili kullanıcılar içindir. Admin giriş kodunu girerek paneli açabilirsin.
+            </p>
+            <div style={{ marginTop: 16 }}>
+              <button onClick={() => setAdminLoginModal(true)} style={{ padding: "10px 16px", borderRadius: 14, fontSize: 13, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg, #E85D4A, #F59E0B)", color: "#fff", border: "none", boxShadow: "0 14px 28px rgba(232,93,74,0.22)" }}>
+                Admin girişini aç
+              </button>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* ── REGISTER MODAL ── */}
@@ -524,6 +581,23 @@ export default function App() {
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
           <button onClick={() => setRegisterModal(null)} style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "none", border: "0.5px solid var(--color-border-secondary)", color: "var(--color-text-primary)" }}>Cancel</button>
           <button onClick={handleRegister} style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: "pointer", background: "#E85D4A", color: "#fff", border: "none" }}>Confirm Registration</button>
+        </div>
+      </Modal>
+
+      {/* ── ADMIN LOGIN MODAL ── */}
+      <Modal open={adminLoginModal} onClose={() => setAdminLoginModal(false)} title="Admin girişi">
+        <FormGroup label="Admin access code">
+          <input
+            type="password"
+            style={inputStyle}
+            value={adminCode}
+            onChange={e => setAdminCode(e.target.value)}
+            placeholder="Admin kodunu gir"
+          />
+        </FormGroup>
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button onClick={() => setAdminLoginModal(false)} style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "none", border: "0.5px solid var(--color-border-secondary)", color: "var(--color-text-primary)" }}>Vazgeç</button>
+          <button onClick={handleAdminUnlock} style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg, #E85D4A, #F59E0B)", color: "#fff", border: "none" }}>Giriş Yap</button>
         </div>
       </Modal>
 
